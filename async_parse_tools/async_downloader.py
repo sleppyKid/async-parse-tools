@@ -54,8 +54,8 @@ class LengthError(Exception):
 class AsyncDownloader(AsyncWeb):
     """Async File Downloader"""
 
-    def __init__(self, connections_limit=20, allow_redirects=False, skip_checking=False):
-        super().__init__(connections_limit, allow_redirects)
+    def __init__(self, connections_limit=20, allow_redirects=False, skip_checking=False, keep_alive=False):
+        super().__init__(connections_limit, allow_redirects, keep_alive)
 
         self._urls = None
         self._download_folder_parent = './download'
@@ -110,7 +110,7 @@ class AsyncDownloader(AsyncWeb):
         self._check_lengths()
         self._create_download_folders()
 
-        connector = aiohttp.TCPConnector(limit=self.connections_limit)
+        connector = aiohttp.TCPConnector(limit=self.connections_limit, force_close=not self.keep_alive)
 
         async with aiohttp.ClientSession(connector=connector) as session:
             session.headers.update(self.headers)

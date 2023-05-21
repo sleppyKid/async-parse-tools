@@ -8,8 +8,15 @@ from .async_base import AsyncWeb
 
 
 class AsyncRequests(AsyncWeb):
-    def __init__(self, request_method='get', request_kwargs=None, connections_limit=20, allow_redirects=False):
-        super().__init__(connections_limit, allow_redirects)
+    def __init__(
+            self,
+            request_method='get',
+            request_kwargs=None,
+            connections_limit=20,
+            allow_redirects=False,
+            keep_alive=False
+    ):
+        super().__init__(connections_limit, allow_redirects, keep_alive)
 
         self.request_method = request_method
         if request_kwargs is not None:
@@ -24,7 +31,7 @@ class AsyncRequests(AsyncWeb):
 
     async def run_async(self, urls, callback_function: Callable[[str, bytes, ClientSession], Awaitable[Any]]):
         self.callback_function = callback_function
-        connector = aiohttp.TCPConnector(limit=self.connections_limit)
+        connector = aiohttp.TCPConnector(limit=self.connections_limit, force_close=not self.keep_alive)
 
         async with aiohttp.ClientSession(connector=connector) as session:
             session.headers.update(self.headers)
