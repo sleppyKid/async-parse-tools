@@ -54,12 +54,14 @@ class LengthError(Exception):
 class AsyncDownloader(AsyncWeb):
     """Async File Downloader"""
 
-    def __init__(self,
-                 connections_limit=20,
-                 allow_redirects=False,
-                 skip_checking=False,
-                 keep_alive=False,
-                 keep_alive_timeout: None | float | object = None):
+    def __init__(
+            self,
+            connections_limit=20,
+            allow_redirects=False,
+            skip_checking=False,
+            keep_alive=True,
+            keep_alive_timeout: None | float | object = 30
+    ):
         super().__init__(connections_limit, allow_redirects, keep_alive, keep_alive_timeout)
 
         self._urls = None

@@ -176,11 +176,13 @@ def concurrency_limit(n=3):
 class AsyncWeb(AsyncBase, ABC):
     """Абстрактный класс, реализующий стандартные настройки для работы с сетью"""
 
-    def __init__(self,
-                 connections_limit=20,
-                 allow_redirects=False,
-                 keep_alive=False,
-                 keep_alive_timeout: None | float | object = None):
+    def __init__(
+            self,
+            connections_limit=20,
+            allow_redirects=False,
+            keep_alive=True,
+            keep_alive_timeout: None | float | object = 30
+    ):
         super().__init__()
         self.connections_limit = connections_limit
         self.allow_redirects = allow_redirects
