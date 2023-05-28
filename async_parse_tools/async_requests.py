@@ -5,6 +5,7 @@ import aiohttp
 from aiohttp import ClientSession
 
 from .async_base import AsyncWeb
+from .fake_array import FakeArray
 
 
 class AsyncRequests(AsyncWeb):
