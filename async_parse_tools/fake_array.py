@@ -32,13 +32,12 @@ class FakeArray:
 
 class StringArray(FakeArray):
     def __init__(self, value: str | list | tuple, folder_strip=False):
-        self.many = isinstance(value, str)
+        self.many = not isinstance(value, str)
         self.folder_strip = folder_strip
         if self.many:
             self.value = tuple(self.strip_value(x) if x else x for x in value)
         else:
             self.value = self.strip_value(value)
-        print(self.value)
 
     def strip_value(self, item):
         if self.folder_strip:
