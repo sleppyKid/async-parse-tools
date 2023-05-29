@@ -73,9 +73,10 @@ def filter_strip(items: tuple[str] | list[str]):
             seen.add(item)
 
 
-REGEX_URL = r'([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
-REGEX_URL_HTTP = r'(https?):\/\/(www\.)?([-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b' \
-                 r'([-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
+REGEX_URL = r'(?P<host>[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b(?P<path>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
+REGEX_URL_HTTP = r'(?P<protocol>https?):\/\/(?P<www>www\.)?' \
+                 r'(?P<host>[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b' \
+                 r'(?P<path>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
 
 
 def regex_url(url: str, protocol=True, match=False):
@@ -84,3 +85,7 @@ def regex_url(url: str, protocol=True, match=False):
     if protocol:
         return f(REGEX_URL_HTTP, url)
     return f(REGEX_URL, url)
+
+
+def parse_url(url):
+    return urlparse(url)
