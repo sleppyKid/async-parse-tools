@@ -62,3 +62,12 @@ def load_json(path: str):
 def remove_forbidden_symbols(line: str):
     symbols = '/\\:\"*?«<>|'
     return ''.join([x for x in line if x not in symbols])
+
+
+def filter_strip(items: tuple[str]):
+    seen = set()
+    for item in items:
+        if item not in seen:
+            yield item.strip()
+            seen.add(item)
+
