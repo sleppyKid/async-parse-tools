@@ -1,11 +1,15 @@
 from collections.abc import Iterable
 
 
+class LengthError(Exception):
+    """Error raises, when length of input lists is mismatching each other"""
+
+
 class FakeArray:
     """Object, to use single object as repeating iterator"""
 
     def __init__(self, value: object | list | tuple):
-        self.many = isinstance(value, Iterable)
+        self.many = not isinstance(value, dict) and isinstance(value, Iterable)
         self.value = value
 
     def __getitem__(self, item):
@@ -30,7 +34,7 @@ class FakeArray:
         return True
 
 
-class StringArray(FakeArray):
+class FakeStringArray(FakeArray):
     def __init__(self, value: str | list | tuple, folder_strip=False):
         self.many = not isinstance(value, str)
         self.folder_strip = folder_strip

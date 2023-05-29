@@ -6,11 +6,7 @@ import aiohttp
 from aiofile import async_open
 
 from .async_base import AsyncWeb
-from .fake_array import StringArray
-
-
-class LengthError(Exception):
-    """Error raises, when length of input lists is mismatching each other"""
+from .fake_array import FakeStringArray, LengthError
 
 
 class AsyncDownloader(AsyncWeb):
@@ -46,7 +42,7 @@ class AsyncDownloader(AsyncWeb):
         self._download_folder_parent = folder.strip().rstrip(r'.\/')
         self._remove_empty_folders = remove_empty_folders
         if subfolders:
-            self._download_subfolders = StringArray(subfolders, True)
+            self._download_subfolders = FakeStringArray(subfolders, True)
         return self
 
     def set_check_folder(self, parent: str, subfolders: str | list | tuple = None, any_extension=False):
@@ -55,13 +51,13 @@ class AsyncDownloader(AsyncWeb):
         self._check_folder_parent = parent.strip().rstrip(r'.\/')
         self._check_any_extension = any_extension
         if subfolders:
-            self._check_subfolders = StringArray(subfolders, True)
+            self._check_subfolders = FakeStringArray(subfolders, True)
         return self
 
     def set_filenames(self, filenames: str | list | tuple, as_prefix=False, prefix_separator='-'):
         """Optional setting to set names of files"""
 
-        self._filenames = StringArray(filenames)
+        self._filenames = FakeStringArray(filenames)
         self._filenames_as_prefix = as_prefix
         self._filenames_separator = prefix_separator
         return self
@@ -72,7 +68,7 @@ class AsyncDownloader(AsyncWeb):
 
     async def run_async(self, urls, folder):
         """Async start of downloading"""
-        self._urls = StringArray(urls)
+        self._urls = FakeStringArray(urls)
         if folder:
             self.set_download_folder(folder)
 
@@ -154,7 +150,7 @@ class AsyncDownloader(AsyncWeb):
         """Checking list lengths"""
 
         base_str = ('The length of download links list does not match the length of {} list.\n'
-                    'Allowed to use [str | list | tuple]')
+                    'Allowed to use [str | list[str] | tuple[str]]')
 
         if self._filenames and not self._urls.compare_length(self._filenames):
             raise LengthError(
