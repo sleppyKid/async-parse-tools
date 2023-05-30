@@ -30,7 +30,8 @@ class AsyncDownloader(AsyncWeb):
 
         self._filenames = None
         self._filenames_as_prefix = False
-        self._filenames_separator = '_'
+        self._filenames_separator = '-'
+        self._filenames_keep_extension = True
 
         self._check_folder_parent = None
         self._check_subfolders = None
@@ -54,12 +55,13 @@ class AsyncDownloader(AsyncWeb):
             self._check_subfolders = FakeStringArray(subfolders, True)
         return self
 
-    def set_filenames(self, filenames: str | list | tuple, as_prefix=False, prefix_separator='-'):
+    def set_filenames(self, filenames: str | list | tuple, as_prefix=False, prefix_separator='-', keep_extension = True):
         """Optional setting to set names of files"""
 
         self._filenames = FakeStringArray(filenames)
         self._filenames_as_prefix = as_prefix
         self._filenames_separator = prefix_separator
+        self._filenames_keep_extension = keep_extension
         return self
 
     def run(self, urls, folder=None):
@@ -103,12 +105,16 @@ class AsyncDownloader(AsyncWeb):
             return
 
         name = url.split('/')[-1].split('?')[0]
+        filename, ext = os.path.splitext(name)
 
         if self._filenames:
             if self._filenames_as_prefix:
-                name = self._filenames[index] + self._filenames_separator + name
+                name = self._filenames[index] + self._filenames_separator + filename
             else:
                 name = self._filenames[index]
+
+        if self._filenames_keep_extension:
+            name += ext
 
         folder = self._download_folder_parent
         if self._download_subfolders:
