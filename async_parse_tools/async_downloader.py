@@ -113,8 +113,8 @@ class AsyncDownloader(AsyncWeb):
             else:
                 name = self._filenames[index]
 
-        if self._filenames_keep_extension:
-            name += ext
+            if self._filenames_keep_extension:
+                name += ext
 
         folder = self._download_folder_parent
         if self._download_subfolders:
