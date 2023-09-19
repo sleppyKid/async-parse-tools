@@ -1,5 +1,6 @@
 import json
 import os.path
+import re
 from random import choice
 from typing import List, Dict
 from urllib.parse import urlparse, urlencode, parse_qsl, urlunparse
@@ -62,3 +63,29 @@ def load_json(path: str):
 def remove_forbidden_symbols(line: str):
     symbols = '/\\:\"*?«<>|'
     return ''.join([x for x in line if x not in symbols])
+
+
+def filter_strip(items: tuple[str] | list[str]):
+    seen = set()
+    for item in items:
+        if item not in seen:
+            yield item.strip()
+            seen.add(item)
+
+
+REGEX_URL = r'(?P<host>[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b(?P<path>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
+REGEX_URL_HTTP = r'(?P<protocol>https?):\/\/(?P<www>www\.)?' \
+                 r'(?P<host>[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b' \
+                 r'(?P<path>[-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
+
+
+def regex_url(url: str, protocol=True, match=False):
+    f = re.match if match else re.findall
+
+    if protocol:
+        return f(REGEX_URL_HTTP, url)
+    return f(REGEX_URL, url)
+
+
+def parse_url(url):
+    return urlparse(url)

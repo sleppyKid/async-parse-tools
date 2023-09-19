@@ -6,49 +6,7 @@ import aiohttp
 from aiofile import async_open
 
 from .async_base import AsyncWeb
-
-
-class StringArray:
-    """Object, to use string as repeating iterator"""
-
-    def __init__(self, value: str | list | tuple, folder_strip=False):
-        self.folder_strip = folder_strip
-        if isinstance(value, str):
-            self.many = False
-            self.value = self.strip_value(value)
-        else:
-            self.many = True
-            self.value = tuple(self.strip_value(x) if x else x for x in value)
-
-    def strip_value(self, item):
-        if self.folder_strip:
-            return str(item).strip().rstrip('.\/')
-        return str(item).strip()
-
-    def __getitem__(self, item):
-        if self.many:
-            return str(self.value[item])
-        return self.value
-
-    def __iter__(self):
-        if self.many:
-            return iter(self.value)
-        return iter((self.value,))
-
-    def __len__(self):
-        if self.many:
-            return len(self.value)
-        return 1
-
-    def compare_length(self, other: 'StringArray'):
-        """Method to compare with others StringArrays"""
-        if self.many and other.many:
-            return len(self) == len(other)
-        return True
-
-
-class LengthError(Exception):
-    """Error raises, when length of input lists is mismatching each other"""
+from .fake_array import FakeStringArray, LengthError
 
 
 class AsyncDownloader(AsyncWeb):
@@ -72,7 +30,8 @@ class AsyncDownloader(AsyncWeb):
 
         self._filenames = None
         self._filenames_as_prefix = False
-        self._filenames_separator = '_'
+        self._filenames_separator = '-'
+        self._filenames_keep_extension = True
 
         self._check_folder_parent = None
         self._check_subfolders = None
@@ -81,27 +40,28 @@ class AsyncDownloader(AsyncWeb):
     def set_download_folder(self, folder: str, subfolders: str | list | tuple = None, remove_empty_folders=True):
         """Optional setting to set downloading folder"""
 
-        self._download_folder_parent = folder.strip().rstrip('.\/')
+        self._download_folder_parent = folder.strip().rstrip(r'.\/')
         self._remove_empty_folders = remove_empty_folders
         if subfolders:
-            self._download_subfolders = StringArray(subfolders, True)
+            self._download_subfolders = FakeStringArray(subfolders, True)
         return self
 
     def set_check_folder(self, parent: str, subfolders: str | list | tuple = None, any_extension=False):
         """Optional setting to set additional folder to check files in it"""
 
-        self._check_folder_parent = parent.strip().rstrip('.\/')
+        self._check_folder_parent = parent.strip().rstrip(r'.\/')
         self._check_any_extension = any_extension
         if subfolders:
-            self._check_subfolders = StringArray(subfolders, True)
+            self._check_subfolders = FakeStringArray(subfolders, True)
         return self
 
-    def set_filenames(self, filenames: str | list | tuple, as_prefix=False, prefix_separator='-'):
+    def set_filenames(self, filenames: str | list | tuple, as_prefix=False, prefix_separator='-', keep_extension = True):
         """Optional setting to set names of files"""
 
-        self._filenames = StringArray(filenames)
+        self._filenames = FakeStringArray(filenames)
         self._filenames_as_prefix = as_prefix
         self._filenames_separator = prefix_separator
+        self._filenames_keep_extension = keep_extension
         return self
 
     def run(self, urls, folder=None):
@@ -110,7 +70,7 @@ class AsyncDownloader(AsyncWeb):
 
     async def run_async(self, urls, folder):
         """Async start of downloading"""
-        self._urls = StringArray(urls)
+        self._urls = FakeStringArray(urls)
         if folder:
             self.set_download_folder(folder)
 
@@ -145,12 +105,16 @@ class AsyncDownloader(AsyncWeb):
             return
 
         name = url.split('/')[-1].split('?')[0]
+        filename, ext = os.path.splitext(name)
 
         if self._filenames:
             if self._filenames_as_prefix:
-                name = self._filenames[index] + self._filenames_separator + name
+                name = self._filenames[index] + self._filenames_separator + filename
             else:
                 name = self._filenames[index]
+
+        if self._filenames_keep_extension:
+            name += ext
 
         folder = self._download_folder_parent
         if self._download_subfolders:
@@ -192,7 +156,7 @@ class AsyncDownloader(AsyncWeb):
         """Checking list lengths"""
 
         base_str = ('The length of download links list does not match the length of {} list.\n'
-                    'Allowed to use [str | list | tuple]')
+                    'Allowed to use [str | list[str] | tuple[str]]')
 
         if self._filenames and not self._urls.compare_length(self._filenames):
             raise LengthError(
