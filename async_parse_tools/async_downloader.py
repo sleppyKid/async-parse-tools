@@ -145,8 +145,12 @@ class AsyncDownloader(AsyncWeb):
             async with session.get(url, allow_redirects=self.allow_redirects) as r:
                 if r.status == 200:
                     data = await r.read()
-                    await self._save_file(filepath, data)
-                    return
+                    if len(data) > 0:
+                        await self._save_file(filepath, data)
+                        return
+                    else:
+                        self._add_error_info("File size is too low:" + len(data),url)
+                        return
                 else:
                     r.raise_for_status()
 
