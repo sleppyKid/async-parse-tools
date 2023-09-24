@@ -149,7 +149,7 @@ class AsyncDownloader(AsyncWeb):
                         await self._save_file(filepath, data)
                         return
                     else:
-                        self._add_error_info("File size is too low:" + len(data),url)
+                        self._add_error_info("File size is too low:" + str(len(data)),url)
                         return
                 else:
                     r.raise_for_status()
