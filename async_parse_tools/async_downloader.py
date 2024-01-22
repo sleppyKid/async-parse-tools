@@ -55,7 +55,7 @@ class AsyncDownloader(AsyncWeb):
             self._check_subfolders = FakeStringArray(subfolders, True)
         return self
 
-    def set_filenames(self, filenames: str | list | tuple, as_prefix=False, prefix_separator='-', keep_extension = True):
+    def set_filenames(self, filenames: str | list | tuple, as_prefix=False, prefix_separator='-', keep_extension=True):
         """Optional setting to set names of files"""
 
         self._filenames = FakeStringArray(filenames)
@@ -149,7 +149,7 @@ class AsyncDownloader(AsyncWeb):
                         await self._save_file(filepath, data)
                         return
                     else:
-                        self._add_error_info("File size is too low:" + str(len(data)),url)
+                        self._add_error_info("File size is too low:" + str(len(data)), url)
                         return
                 else:
                     r.raise_for_status()
