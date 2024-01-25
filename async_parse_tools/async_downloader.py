@@ -201,7 +201,7 @@ class AsyncDownloader(AsyncWeb):
     async def _check_file_in_folder(folder, name, any_ext=False):
         filepath = os.path.join(folder, name)
         if any_ext:
-            return os.path.exists(filepath) or bool(glob.glob(glob.escape(os.path.splitext(filepath)[0] + '.*')))
+            return os.path.exists(filepath) or bool(glob.glob(glob.escape(os.path.splitext(filepath)[0]) + '.*'))
 
         return os.path.exists(filepath)
 
