@@ -87,8 +87,9 @@ def regex_url(url: str, protocol=True, match=False):
     return f(REGEX_URL, url)
 
 
-def parse_url(url):
-    return urlparse(url)
+parse_url = urlparse
+# def parse_url(url):
+#     return urlparse(url)
 
 
 def get_base_url(url):

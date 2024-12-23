@@ -87,12 +87,14 @@ class AsyncDownloader(AsyncWeb):
 
             tasks = (self._prepare_download(session, ind) for ind in range(len(urls)))
 
-            await self._start_tasks_limited(tasks, length=len(urls), ignore_output=True)
+            results = await self._start_tasks_limited(tasks, length=len(urls))
 
         self._print_errors()
 
         if self._remove_empty_folders:
             self._clear_empty_subfolders()
+
+        return tuple(zip(urls, results))
 
     async def _prepare_download(self, session, index):
         """
@@ -147,14 +149,14 @@ class AsyncDownloader(AsyncWeb):
                     data = await r.read()
                     if len(data) > 0:
                         await self._save_file(filepath, data)
-                        return
+                        return filepath
                     else:
                         self._add_error_info("File size is too low:" + str(len(data)), url)
-                        return
+                        return None
                 else:
                     r.raise_for_status()
 
-        await load_image()
+        return await load_image()
 
     def _check_lengths(self):
         """Checking list lengths"""

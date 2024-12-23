@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from async_parse_tools import AsyncDownloader
 
 if __name__ == '__main__':
@@ -10,7 +12,7 @@ if __name__ == '__main__':
         ['https://loremflickr.com/asdaczxczcz', 'https://loremflickr.com/2312dasd', 'https://loremflickr.com/lol'])
     names = [str(x) + '.jpg' for x in range(images_num)]
 
-    _, e = (
+    t, e = (
         AsyncDownloader(connections_limit=20, allow_redirects=True)
         .error_settings(max_tries=2, return_errors=True)
         .set_filenames(names)
@@ -21,5 +23,6 @@ if __name__ == '__main__':
         # .set_user_agent('')
         .run(urls=urls_list)
     )
+    pprint(t)
 
-    print(e)
+    pprint(e)
