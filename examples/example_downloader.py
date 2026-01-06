@@ -13,7 +13,7 @@ if __name__ == '__main__':
     names = [str(x) + '.jpg' for x in range(images_num)]
 
     t, e = (
-        AsyncDownloader(connections_limit=20, allow_redirects=True)
+        AsyncDownloader(connections_limit=20, allow_redirects=True, skip_checking=True)
         .error_settings(max_tries=2, return_errors=True)
         .set_filenames(names)
         .set_download_folder('./download')

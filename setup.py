@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='async-parse-tools',
-      version='0.2.4',
+      version='0.2.5',
       description='Async Parse Tools',
       author='',
       author_email='',
@@ -9,10 +9,10 @@ setup(name='async-parse-tools',
       url='https://github.com/sleppyKid/async-parse-tools.git',
       packages=['async_parse_tools'],
       install_requires=[
-          'aiohttp~=3.10.11',
-          'aiofile~=3.8.1',
-          'tqdm~=4.66.3',
+          'aiohttp~=3.13.3',
+          'aiofile~=3.9.0',
+          'tqdm~=4.67.1',
           'asyncio-pool~=0.6.0',
-          'playwright~=1.27.1'
+          'playwright~=1.57.0'
       ],
       )
