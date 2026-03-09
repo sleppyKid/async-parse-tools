@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='async-parse-tools',
-      version='0.2.5',
+      version='0.2.6',
       description='Async Parse Tools',
       author='',
       author_email='',
@@ -13,6 +13,10 @@ setup(name='async-parse-tools',
           'aiofile~=3.9.0',
           'tqdm~=4.67.1',
           'asyncio-pool~=0.6.0',
-          'playwright~=1.57.0'
       ],
+      extras_require={
+          "pw": [
+              'playwright~=1.57.0'
+          ]
+      }
       )
