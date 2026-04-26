@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='async-parse-tools',
-      version='0.2.6',
+      version='0.2.7',
       description='Async Parse Tools',
       author='',
       author_email='',
