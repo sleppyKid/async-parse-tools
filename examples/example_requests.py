@@ -1,3 +1,5 @@
+import asyncio
+import json
 from pprint import pprint
 # pip install lxml
 # pip install beautifulsoup4
@@ -5,14 +7,12 @@ from bs4 import BeautifulSoup
 
 from async_parse_tools import AsyncRequests, ClientSession
 
-urls = tuple(f'https://www.istockphoto.com/en/search/2/image?phrase=cats&page={x}' for x in range(5))
+urls = tuple(f'https://jsonplaceholder.typicode.com/todos/{x}' for x in range(1,4))
 
 
 async def parse(url: str, r: bytes, session: ClientSession):
-    bs = BeautifulSoup(r, "lxml")
-    images = bs.findAll('picture')
-    urls = [x.find('img').get('src') for x in images]
-    return urls
+    js = json.loads(r)
+    return js
 
 
 out = (AsyncRequests(connections_limit=5)
@@ -22,4 +22,15 @@ out = (AsyncRequests(connections_limit=5)
        # .set_headers()
        .run(urls, parse))
 
-pprint(out[0])
+pprint(out)
+
+
+async def as_completed():
+    ar = AsyncRequests(connections_limit=5).error_settings(max_tries=2)
+    out = []
+    async for x in ar.run_async_as_completed(urls, parse):
+        out.append(x)
+    pprint(out)
+
+
+asyncio.run(as_completed())

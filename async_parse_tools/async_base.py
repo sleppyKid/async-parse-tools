@@ -81,6 +81,15 @@ class AsyncBase(ABC):
 
         return output
 
+    async def _start_tasks_as_completed(self, tasks):
+        if self.use_statusbar:
+            for result in  tqdm.asyncio.tqdm.as_completed(tasks):
+                yield await result
+        else:
+            for result in asyncio.as_completed(tasks):
+                yield await result
+
+
     async def _start_tasks_limited(self, tasks: Generator | Iterable, limit=100, length=None,
                                    gc_size=2000, ignore_output=False):
         """Метод запуска заданий с ограничением одновременных выполнений(потоков)"""

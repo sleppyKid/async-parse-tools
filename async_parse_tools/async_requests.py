@@ -58,6 +58,26 @@ class AsyncRequests(AsyncWeb):
 
         return output
 
+    async def run_async_as_completed(self, urls,
+                                     callback_function: Callable[[str, bytes, ClientSession], Awaitable[Any]]):
+        self.urls = FakeStringArray(urls)
+        self.callback_function = callback_function
+        self._check_lengths()
+
+        connector = aiohttp.TCPConnector(limit=self.connections_limit,
+                                         force_close=not self.keep_alive,
+                                         keepalive_timeout=self.keep_alive_timeout)
+
+        async with aiohttp.ClientSession(connector=connector) as session:
+            session.headers.update(self.headers)
+            session.cookie_jar.update_cookies(self.cookies)
+
+            tasks = [self._load_info(session, index) for index in range(len(urls))]
+            async for res in self._start_tasks_as_completed(tasks):
+                yield res
+
+        self._print_errors()
+
     async def _load_info(self, session: ClientSession, index):
 
         url = self.urls[index]
